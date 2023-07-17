@@ -16,19 +16,17 @@ use App\Http\Controllers\TaskController;
 */
 
 
-Route::post('register', [AuthController::class, 'register']);
-Route::post('login', [AuthController::class, 'login']);
+Route::middleware(['json.response'])->group(function () {
 
 
-Route::middleware('auth:api')->group(function () {
-    Route::get('logout', 'AuthController@logout');
-    Route::get('/', 'AuthController@user');
-    Route::get('user', [AuthController::class, 'user']);
+    Route::middleware('auth:api')->group(function () {
+        Route::get('logout', [AuthController::class, 'logout']);
+        Route::get('user', [AuthController::class, 'user']);
 
-    Route::get('Tasks', [TaskController::class, 'index']);
-    Route::post('Tasks', [TaskController::class, 'store']);
-    Route::get('Tasks/{id}', [TaskController::class, 'show']);
-    Route::put('Tasks/{id}', [TaskController::class, 'update']);
-    Route::delete('Tasks/{id}', [TaskController::class, 'destroy']);
-
+        Route::get('Tasks', [TaskController::class, 'index']);
+        Route::post('Tasks', [TaskController::class, 'store']);
+        Route::get('Tasks/{id}', [TaskController::class, 'show']);
+        Route::put('Tasks/{id}', [TaskController::class, 'update']);
+        Route::delete('Tasks/{id}', [TaskController::class, 'destroy']);
+    });
 });
