@@ -5,14 +5,13 @@ const TaskForm = ({ isLoggedIn }) => {
   const [taskData, setTaskData] = useState({
     title: "",
     description: "",
+    status: "todo",
   });
 
   const [errMsgTitle, setErrMsgTitle] = useState("");
   const [errMsgDescription, setErrMsgDescription] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [error, setError] = useState(false);
-
-
 
   const onChangeHandler = (e) => {
     setTaskData({ ...taskData, [e.target.name]: e.target.value });
@@ -26,19 +25,15 @@ const TaskForm = ({ isLoggedIn }) => {
     if (taskData.title.trim() === "" || taskData.description.trim() === "") {
       return;
     }
-    const formdata = new FormData();
-    formdata.append("title", taskData.title);
-    formdata.append("description", taskData.description);
-
-    const header = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    };
 
     const requestOptions = {
       method: "POST",
-      body: formdata,
-      headers: header,
+      body: JSON.stringify(taskData),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+      },
     };
 
     fetch("http://localhost:8000/api/Tasks", requestOptions)
@@ -48,25 +43,26 @@ const TaskForm = ({ isLoggedIn }) => {
           setTaskData({
             title: "",
             description: "",
+            status: "todo",
           });
           setErrMsgTitle("");
           setErrMsgDescription("");
           setError(false);
+          window.location.reload();
           setSuccessMsg("Task added successfully.");
         }
+        setError(true);
         if (result.errors && result.errors.title) {
-          setError(true);
           setErrMsgTitle(result.errors.title[0]);
         }
         if (result.errors && result.errors.description) {
-          setError(true);
           setErrMsgDescription(result.errors.description[0]);
         }
-      }).catch((error) => {
+      })
+      .catch((error) => {
         setError(true);
         console.log(error);
       });
-    setTaskData({ title: "", description: "" });
   };
 
   if (!isLoggedIn) {
@@ -77,7 +73,7 @@ const TaskForm = ({ isLoggedIn }) => {
     <Container fluid="sm">
       <Form onSubmit={onSubmitHandler}>
         <Form.Group className="mb-3" controlId="formTitle">
-          <Form.Label className="d-flex justify-content-start">Title</Form.Label>
+          <Form.Label>Title</Form.Label>
           <Form.Control
             type="text"
             name="title"
@@ -92,7 +88,7 @@ const TaskForm = ({ isLoggedIn }) => {
           )}
         </Form.Group>
         <Form.Group className="mb-3" controlId="formDescription">
-          <Form.Label className="d-flex justify-content-start">Description</Form.Label>
+          <Form.Label>Description</Form.Label>
           <Form.Control
             as="textarea"
             rows={3}
@@ -106,6 +102,19 @@ const TaskForm = ({ isLoggedIn }) => {
               {errMsgDescription}
             </Alert>
           )}
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formStatus">
+          <Form.Label>Status</Form.Label>
+          <Form.Control
+            as="select"
+            name="status"
+            value={taskData.status}
+            onChange={onChangeHandler}
+          >
+            <option value="todo">New</option>
+            <option value="in-progress">In Progress</option>
+            <option value="done">Completed</option>
+          </Form.Control>
         </Form.Group>
         <Button variant="primary" type="submit">
           Add Task

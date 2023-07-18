@@ -2,15 +2,12 @@ import React from "react";
 import { Navbar, Nav, Button, Container } from "react-bootstrap";
 
 const Header = ({ isLoggedIn, onLogout }) => {
-    // const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     const handleLogout = async () => {
         try {
             const token = sessionStorage.getItem("authToken");
             const headers = new Headers();
             headers.append("Authorization", `Bearer ${token}`);
-            // console.log(token);
-            // console.log(headers);
 
             const options = {
                 method: "GET",
@@ -30,15 +27,6 @@ const Header = ({ isLoggedIn, onLogout }) => {
             console.log(error);
         }
     };
-
-    // useEffect(() => {
-    //     const checkLoginStatus = () => {
-    //         const isLoggedIn = sessionStorage.getItem("isLoggedIn");
-    //         setIsLoggedIn(isLoggedIn === "true");
-    //     };
-
-    //     checkLoginStatus();
-    // }, []);
 
     return (
         <Navbar bg="light" expand="lg">
