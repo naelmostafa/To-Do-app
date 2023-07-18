@@ -27,3 +27,12 @@ Route::middleware(['json.response'])->group(function () {
     });
 
 });
+
+Route::get('send/email', function(){
+
+	$send_mail = 'test@gmail.com';
+
+    dispatch(new App\Jobs\SendEmailJob($send_mail));
+
+    dd('send mail successfully !!');
+});
